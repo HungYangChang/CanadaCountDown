@@ -14,6 +14,7 @@ const TravelEntryScreen: React.FC = () => {
   const [country, setCountry] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [showError, setShowError] = useState(false);
   
   const [showCalendar, setShowCalendar] = useState<'start' | 'end' | null>(null);
 
@@ -32,6 +33,12 @@ const TravelEntryScreen: React.FC = () => {
 
   const handleSave = () => {
     if (!startDate || !endDate || !country.trim()) return;
+
+    // Validation: Start Date must be before or equal to End Date
+    if (startDate > endDate) {
+        setShowError(true);
+        return;
+    }
 
     const formatYMD = (d: Date) => {
         const y = d.getFullYear();
@@ -65,123 +72,119 @@ const TravelEntryScreen: React.FC = () => {
     }
   };
 
-  const duration = (startDate && endDate) ? (getDaysDiff(startDate, endDate) + 1) : 0;
+  const isValidSequence = startDate && endDate && startDate <= endDate;
+  const duration = (startDate && endDate && isValidSequence) ? (getDaysDiff(startDate, endDate) + 1) : 0;
 
   return (
-    <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display antialiased text-[#111418] dark:text-white overflow-x-hidden relative transition-colors">
-      <div className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-[#e5e7eb] dark:border-[#293038] px-4 h-14 flex items-center justify-between transition-colors">
+    <div className="bg-background-light dark:bg-black min-h-screen flex flex-col font-display antialiased overflow-x-hidden relative">
+      {/* iOS Style Alert Modal */}
+      {showError && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/20 backdrop-blur-[2px] p-8 animate-in fade-in duration-200">
+            <div className="bg-[#F2F2F2] dark:bg-[#1C1C1E] rounded-[14px] shadow-xl w-full max-w-[270px] overflow-hidden transform scale-100 flex flex-col">
+                <div className="p-5 text-center flex flex-col gap-1">
+                    <h3 className="text-[17px] font-semibold text-black dark:text-white leading-snug">Invalid Dates</h3>
+                    <p className="text-[13px] text-black dark:text-white leading-snug">
+                        The return date cannot be before the departure date.
+                    </p>
+                </div>
+                <div className="border-t border-[#3F3F3F]/20 dark:border-[#545458]/60 flex">
+                    <button 
+                        onClick={() => setShowError(false)}
+                        className="w-full py-3 text-[17px] font-semibold text-primary active:bg-gray-200 dark:active:bg-white/10 transition-colors"
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+      )}
+
+      <div className="sticky top-0 z-50 bg-background-light/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-6 pt-12 pb-3 flex items-center justify-between transition-colors">
         <button 
           onClick={() => navigate(-1)}
-          className="text-primary/80 dark:text-[#9dabb9] text-base font-medium leading-normal hover:opacity-70 transition-opacity">Cancel</button>
-        <h1 className="text-[#111418] dark:text-white text-[17px] font-bold leading-tight absolute left-1/2 -translate-x-1/2 w-max">
+          className="text-primary text-[17px] cursor-pointer hover:opacity-70 transition-opacity active:opacity-50">Cancel</button>
+        <h1 className="text-black dark:text-white text-[17px] font-semibold absolute left-1/2 -translate-x-1/2">
             {id ? 'Edit Trip' : 'New Trip'}
         </h1>
         <button 
           onClick={handleSave}
           disabled={!startDate || !endDate || !country.trim()}
-          className="text-primary text-base font-bold leading-normal hover:opacity-80 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed">Save</button>
+          className="text-primary text-[17px] font-semibold cursor-pointer hover:opacity-70 transition-opacity disabled:opacity-30 disabled:cursor-default active:opacity-50">Done</button>
       </div>
       
-      <div className="flex-1 overflow-y-auto pb-32">
-        <div className="px-5 pt-6 pb-2">
-          <h2 className="text-[#111418] dark:text-white text-2xl font-bold leading-tight tracking-tight">{id ? 'Edit Trip' : 'Add Trip'}</h2>
-          <p className="text-[#6b7280] dark:text-[#9dabb9] text-sm mt-1">Record days spent outside Canada.</p>
-        </div>
+      <div className="flex-1 overflow-y-auto pb-32 pt-6 px-6">
         
-        <div className="mt-4 px-5">
-           <label className="flex flex-col">
-              <span className="text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Destination</span>
-              <input 
-                type="text"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className="w-full rounded-xl border-gray-200 dark:border-[#3b4754] bg-white dark:bg-[#1c2127] text-[#111418] dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent h-12 px-4 text-base font-normal placeholder:text-gray-400 dark:placeholder:text-[#586370] shadow-sm mb-2"
-                placeholder="e.g. United States"
-              />
-            </label>
+        {/* Form Group */}
+        <div className="bg-card-light dark:bg-card-dark rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 mb-6">
+            
+            {/* Country Input */}
+            <div className="flex items-center justify-between p-3 border-b border-gray-100 dark:border-white/10 bg-card-light dark:bg-card-dark">
+                 <label className="text-[16px] text-black dark:text-white w-24 shrink-0">Destination</label>
+                 <input 
+                    type="text"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                    className="flex-1 bg-transparent border-none text-right text-black dark:text-white placeholder-gray-400 focus:ring-0 p-0 text-[16px]"
+                    placeholder="Required"
+                  />
+            </div>
+
+            {/* Departure Date */}
+            <div>
+                <button 
+                    onClick={() => setShowCalendar(showCalendar === 'start' ? null : 'start')}
+                    className={`w-full flex items-center justify-between p-3 border-b border-gray-100 dark:border-white/10 active:bg-gray-50 dark:active:bg-white/5 transition-colors ${showCalendar === 'start' ? 'bg-gray-50 dark:bg-white/5' : ''}`}>
+                    <span className="text-[16px] text-black dark:text-white">Departure</span>
+                    <span className={`text-[16px] transition-colors ${startDate ? 'text-black dark:text-white' : 'text-gray-400'} ${showCalendar === 'start' ? 'text-primary dark:text-primary font-medium' : ''}`}>
+                        {startDate ? formatDate(startDate) : 'Select'}
+                    </span>
+                </button>
+                <div className={`overflow-hidden transition-all duration-300 ease-in-out ${showCalendar === 'start' ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="p-2 bg-gray-50 dark:bg-black/20 border-b border-gray-100 dark:border-white/10">
+                        <Calendar 
+                            selectedDate={startDate} 
+                            onSelectDate={(d) => { setStartDate(d); setShowCalendar('end'); }} // Auto jump to end date
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Return Date */}
+            <div>
+                <button 
+                    onClick={() => setShowCalendar(showCalendar === 'end' ? null : 'end')}
+                    className={`w-full flex items-center justify-between p-3 active:bg-gray-50 dark:active:bg-white/5 transition-colors ${showCalendar === 'end' ? 'bg-gray-50 dark:bg-white/5' : ''}`}>
+                    <span className="text-[16px] text-black dark:text-white">Return</span>
+                    <span className={`text-[16px] transition-colors ${endDate ? 'text-black dark:text-white' : 'text-gray-400'} ${showCalendar === 'end' ? 'text-primary dark:text-primary font-medium' : ''}`}>
+                        {endDate ? formatDate(endDate) : 'Select'}
+                    </span>
+                </button>
+                 <div className={`overflow-hidden transition-all duration-300 ease-in-out ${showCalendar === 'end' ? 'max-h-[400px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="p-2 bg-gray-50 dark:bg-black/20">
+                        <Calendar 
+                            selectedDate={endDate} 
+                            onSelectDate={(d) => { setEndDate(d); setShowCalendar(null); }}
+                            minDate={startDate || undefined}
+                        />
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div className="mt-4">
-          <div className="px-5 pb-3">
-            <h3 className="text-[#111418] dark:text-white text-sm font-bold uppercase tracking-wide opacity-80">Timeframe</h3>
-          </div>
-          
-          <div className="bg-white dark:bg-[#1c2127] border-y border-[#e5e7eb] dark:border-[#293038] px-5 py-4 sm:rounded-xl sm:border sm:mx-5 sm:px-4 flex flex-col gap-4">
-            
-            {/* Start Date Field */}
-            <div className="relative group">
-              <label className="block text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Departure Date</label>
-              <div 
-                onClick={() => setShowCalendar(showCalendar === 'start' ? null : 'start')}
-                className={`relative w-full rounded-xl border border-gray-200 dark:border-[#3b4754] bg-[#f9fafb] dark:bg-[#101922] h-12 pl-4 pr-10 flex items-center shadow-sm transition-all cursor-pointer ${showCalendar === 'start' ? 'ring-2 ring-primary border-transparent' : ''}`}>
-                 <span className={`text-base font-medium ${startDate ? 'text-[#111418] dark:text-white' : 'text-gray-400'}`}>
-                    {startDate ? formatDate(startDate) : 'Select Date'}
-                 </span>
-                 <span className="material-symbols-outlined absolute right-3 text-gray-400">calendar_month</span>
-              </div>
-              
-              {showCalendar === 'start' && (
-                <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <Calendar 
-                        selectedDate={startDate} 
-                        onSelectDate={(d) => { setStartDate(d); setShowCalendar(null); }}
-                        minYear={2000}
-                        maxYear={2050}
-                    />
-                </div>
-              )}
-            </div>
-
-            {/* End Date Field */}
-            <div className="relative group">
-              <label className="block text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Return Date</label>
-              <div 
-                onClick={() => setShowCalendar(showCalendar === 'end' ? null : 'end')}
-                className={`relative w-full rounded-xl border border-gray-200 dark:border-[#3b4754] bg-[#f9fafb] dark:bg-[#101922] h-12 pl-4 pr-10 flex items-center shadow-sm transition-all cursor-pointer ${showCalendar === 'end' ? 'ring-2 ring-primary border-transparent' : ''}`}>
-                 <span className={`text-base font-medium ${endDate ? 'text-[#111418] dark:text-white' : 'text-gray-400'}`}>
-                    {endDate ? formatDate(endDate) : 'Select Date'}
-                 </span>
-                 <span className="material-symbols-outlined absolute right-3 text-gray-400">calendar_month</span>
-              </div>
-              
-              {showCalendar === 'end' && (
-                <div className="mt-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <Calendar 
-                        selectedDate={endDate} 
-                        onSelectDate={(d) => { setEndDate(d); setShowCalendar(null); }}
-                        minYear={2000}
-                        maxYear={2050}
-                    />
-                </div>
-              )}
-            </div>
-            
-          </div>
-          
-          <div className="px-5 mt-4">
-            <div className="bg-primary/10 dark:bg-primary/20 rounded-xl p-4 flex items-start gap-3 border border-primary/10 dark:border-primary/5">
-              <div className="bg-primary/20 rounded-full p-1 shrink-0">
-                <span className="material-symbols-outlined text-primary text-[20px] block">flight_takeoff</span>
-              </div>
-              <div className="flex flex-col">
-                <p className="text-[#111418] dark:text-white text-sm font-bold">{duration > 0 ? duration : 0} Days Absent</p>
-                <p className="text-[#4e7397] dark:text-[#aabacf] text-xs font-medium leading-relaxed mt-0.5">
-                  These days will be subtracted from your physical presence count.
-                </p>
-              </div>
-            </div>
-          </div>
+        {/* Info Text */}
+        <div className="px-4 mb-6">
+            <p className="text-[12px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                {!startDate || !endDate ? 'Total Absence: 0 Days' : 
+                 isValidSequence ? `Total Absence: ${duration} Days` : 'Invalid Dates'}
+            </p>
         </div>
 
         {id && (
-            <div className="px-5 mt-10 mb-6">
             <button 
                 onClick={handleDelete}
-                className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold text-base hover:bg-red-100 dark:hover:bg-red-900/20 active:scale-[0.98] transition-all">
-                <span className="material-symbols-outlined text-[20px]">delete</span>
+                className="w-full bg-card-light dark:bg-card-dark text-red-500 text-[17px] font-normal py-3 rounded-xl shadow-sm ring-1 ring-black/5 dark:ring-white/10 active:opacity-70 transition-opacity active:bg-gray-50 dark:active:bg-white/5">
                 Delete Trip
             </button>
-            </div>
         )}
       </div>
       <BottomNav />

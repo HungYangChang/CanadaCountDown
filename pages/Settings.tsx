@@ -19,11 +19,14 @@ const SettingsScreen: React.FC = () => {
 
     // Check if navigator.share is supported and URL is valid for sharing (http/https)
     // Some browsers throw "Invalid URL" for non-http protocols
-    const canShare = navigator.share && (url.startsWith('http://') || url.startsWith('https://'));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const nav = navigator as any;
+    const canShare = nav.share && (url.startsWith('http://') || url.startsWith('https://'));
 
     if (canShare) {
       try {
-        await navigator.share(shareData);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (navigator as any).share(shareData);
         return; 
       } catch (err) {
         console.warn('Share API failed:', err);
@@ -44,12 +47,12 @@ const SettingsScreen: React.FC = () => {
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col">
       {/* Standardized Header */}
-      <div className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 pb-4 pt-14 border-b border-transparent dark:border-white/5 transition-colors min-h-[88px]">
+      <div className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-6 pb-4 pt-14 border-b border-transparent dark:border-white/5 transition-colors min-h-[88px]">
          <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight leading-tight">{t.settings}</h1>
          <div className="w-10 h-10"></div>
       </div>
 
-      <main className="flex-grow flex flex-col gap-6 p-4">
+      <main className="flex-grow flex flex-col gap-6 p-6">
         <div className="flex flex-col gap-2">
           <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider ml-1">{t.preferences}</h3>
           <div className="flex flex-col items-stretch justify-start rounded-xl shadow-[0_0_4px_rgba(0,0,0,0.1)] bg-gray-100/50 dark:bg-white/5 overflow-hidden border border-transparent dark:border-white/5">
@@ -93,6 +96,58 @@ const SettingsScreen: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Official Resources */}
+        <div className="flex flex-col gap-2">
+            <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider ml-1">{t.officialResources}</h3>
+            <div className="flex flex-col items-stretch justify-start rounded-xl shadow-[0_0_4px_rgba(0,0,0,0.1)] bg-gray-100/50 dark:bg-white/5 overflow-hidden border border-transparent dark:border-white/5">
+                <a 
+                    href="https://eservices.cic.gc.ca/rescalc/resCalcStartNew.do" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-4 w-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition-colors border-b border-gray-200 dark:border-white/5"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                            <span className="material-symbols-outlined">calculate</span>
+                        </div>
+                        <span className="text-base font-medium text-gray-900 dark:text-white">{t.physicalCalc}</span>
+                    </div>
+                    <span className="material-symbols-outlined text-gray-400">open_in_new</span>
+                </a>
+                
+                <a 
+                    href="https://www.canada.ca/en/immigration-refugees-citizenship/services/canadian-citizenship/become-canadian-citizen/apply.html" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-4 w-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition-colors border-b border-gray-200 dark:border-white/5"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                            <span className="material-symbols-outlined">edit_document</span>
+                        </div>
+                        <span className="text-base font-medium text-gray-900 dark:text-white">{t.applyCitizenship}</span>
+                    </div>
+                    <span className="material-symbols-outlined text-gray-400">open_in_new</span>
+                </a>
+
+                <a 
+                    href="https://www.canada.ca/en/immigration-refugees-citizenship/services/application/check-processing-times.html" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-4 w-full hover:bg-gray-200/50 dark:hover:bg-white/10 transition-colors"
+                >
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">
+                            <span className="material-symbols-outlined">pending_actions</span>
+                        </div>
+                        <span className="text-base font-medium text-gray-900 dark:text-white">{t.processingTime}</span>
+                    </div>
+                    <span className="material-symbols-outlined text-gray-400">open_in_new</span>
+                </a>
+            </div>
+        </div>
+
         <div className="flex flex-col gap-2">
           <h3 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider ml-1">{t.support}</h3>
           <div className="flex flex-col items-stretch justify-start rounded-xl shadow-[0_0_4px_rgba(0,0,0,0.1)] bg-gray-100/50 dark:bg-white/5 overflow-hidden border border-transparent dark:border-white/5">

@@ -12,7 +12,7 @@ const BottomNav: React.FC = () => {
 
   return (
     <div className="sticky bottom-0 z-20 w-full border-t border-gray-200/80 bg-background-light/95 dark:border-white/5 dark:bg-background-dark/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background-light/80">
-      <div className="grid grid-cols-3 px-2 pb-safe-bottom pt-2">
+      <div className="grid grid-cols-4 px-2 pb-safe-bottom pt-2">
         <Link to="/" className={`flex flex-col items-center justify-center gap-1 group pb-5 pt-1`}>
           <div className={`flex h-8 w-16 items-center justify-center rounded-full transition-colors ${isActive('/') ? 'bg-primary/20 dark:bg-blue-900/50 text-primary dark:text-blue-200' : 'text-gray-500 dark:text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/5'}`}>
             <span className={`material-symbols-outlined !text-2xl ${isActive('/') ? 'fill' : ''}`}>home</span>
@@ -20,6 +20,13 @@ const BottomNav: React.FC = () => {
           <p className={`text-[10px] font-medium transition-colors ${isActive('/') ? 'text-primary dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>{t.home}</p>
         </Link>
         
+        <Link to="/temporary-presence-history" className={`flex flex-col items-center justify-center gap-1 group pb-5 pt-1`}>
+          <div className={`flex h-8 w-16 items-center justify-center rounded-full transition-colors ${isActive('/temporary-presence-history') ? 'bg-primary/20 dark:bg-blue-900/50 text-primary dark:text-blue-200' : 'text-gray-500 dark:text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/5'}`}>
+            <span className={`material-symbols-outlined !text-2xl ${isActive('/temporary-presence-history') ? 'fill' : ''}`}>home_work</span>
+          </div>
+          <p className={`text-[10px] font-medium transition-colors ${isActive('/temporary-presence-history') ? 'text-primary dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>TR</p>
+        </Link>
+
         <Link to="/travel-history" className={`flex flex-col items-center justify-center gap-1 group pb-5 pt-1`}>
           <div className={`flex h-8 w-16 items-center justify-center rounded-full transition-colors ${isActive('/travel-history') ? 'bg-primary/20 dark:bg-blue-900/50 text-primary dark:text-blue-200' : 'text-gray-500 dark:text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/5'}`}>
             <span className={`material-symbols-outlined !text-2xl ${isActive('/travel-history') ? 'fill' : ''}`}>flight_takeoff</span>

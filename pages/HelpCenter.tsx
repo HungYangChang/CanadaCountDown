@@ -30,7 +30,7 @@ const HelpCenterScreen: React.FC = () => {
 
     return (
         <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden transition-colors">
-             <header className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-4 pb-4 pt-14 border-b border-transparent dark:border-white/5 min-h-[88px]">
+             <header className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-6 pb-4 pt-14 border-b border-transparent dark:border-white/5 min-h-[88px]">
                 <div className="flex items-center gap-2">
                     <button onClick={() => navigate(-1)} className="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-gray-900 dark:text-white">
                         <span className="material-symbols-outlined">arrow_back</span>
@@ -39,7 +39,7 @@ const HelpCenterScreen: React.FC = () => {
                 </div>
                 <div className="h-10 w-10"></div>
             </header>
-            <main className="flex-1 px-4 pt-4 pb-28">
+            <main className="flex-1 px-6 pt-4 pb-28">
                 <div className="flex flex-col gap-4">
                     {faqs.map((faq, index) => (
                         <div key={index} className="rounded-xl bg-gray-100 dark:bg-[#1A2532] p-5 shadow-sm">

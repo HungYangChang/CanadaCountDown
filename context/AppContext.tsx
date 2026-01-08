@@ -6,15 +6,8 @@ const defaultState: AppState = {
   prDate: null,
   darkMode: true,
   language: 'en',
-  travelHistory: [
-    { id: '1', country: 'United States', startDate: '2024-01-10', endDate: '2024-01-20', days: 11 },
-    { id: '2', country: 'Mexico', startDate: '2023-12-15', endDate: '2023-12-22', days: 8 },
-    { id: '3', country: 'United Kingdom', startDate: '2023-11-01', endDate: '2023-11-10', days: 10 },
-  ],
-  tempPresenceHistory: [
-     { id: '1', type: 'Student', permitNumber: 'SP123', startDate: '2022-01-15', endDate: '2023-01-15', days: 366 },
-     { id: '2', type: 'Worker', permitNumber: 'WP456', startDate: '2023-02-01', endDate: '2023-08-02', days: 183 },
-  ],
+  travelHistory: [],
+  tempPresenceHistory: [],
 };
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -23,8 +16,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [prDate, setPrDate] = useState<Date | null>(null);
   const [darkMode, setDarkMode] = useState(true);
   const [language, setLanguage] = useState<Language>('en');
-  const [travelHistory, setTravelHistory] = useState<TravelRecord[]>(defaultState.travelHistory);
-  const [tempPresenceHistory, setTempPresenceHistory] = useState<TempPresenceRecord[]>(defaultState.tempPresenceHistory);
+  const [travelHistory, setTravelHistory] = useState<TravelRecord[]>([]);
+  
+  // Initialize with empty array as requested
+  const [tempPresenceHistory, setTempPresenceHistory] = useState<TempPresenceRecord[]>([]);
 
   useEffect(() => {
     // Apply dark mode class to html element
