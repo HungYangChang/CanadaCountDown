@@ -45,31 +45,6 @@ const HomeScreen: React.FC = () => {
   const eligibilityDate = new Date();
   eligibilityDate.setDate(today.getDate() + daysRemaining);
 
-  const handleTip = (item: string) => {
-    // ---------------------------------------------------------
-    // CONFIGURE YOUR PAYMENT LINKS HERE
-    // 1. Go to Stripe.com -> Products -> Create Payment Link
-    // 2. Or use buymeacoffee.com
-    // 3. Paste the URLs below
-    // ---------------------------------------------------------
-    const paymentLinks: Record<string, string> = {
-        'Snack': 'https://buymeacoffee.com/james.with.nani', 
-        'Coffee': 'https://buymeacoffee.com/james.with.nani',
-        'Lunch': 'https://buymeacoffee.com/james.with.nani',
-        'Gym Pass': 'https://buymeacoffee.com/james.with.nani',
-    };
-
-    const link = paymentLinks[item];
-
-    if (link && !link.includes('PLACEHOLDER')) {
-        // Open the secure payment page in a new tab
-        window.open(link, '_blank');
-    } else {
-        // Fallback if you haven't set up links yet
-        alert(`To enable payments, please create Payment Links in Stripe or BuyMeACoffee and paste the URLs into pages/Home.tsx.\n\nYou selected: ${item}`);
-    }
-  };
-
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col">
       {/* Standardized Header */}
@@ -250,60 +225,25 @@ const HomeScreen: React.FC = () => {
         </div>
         
         {/* Tip James Section */}
-        <div className="py-2 pb-24 mt-4">
-            <div className="flex flex-col gap-3">
-                <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-bold text-gray-900 dark:text-white">Enjoying the app?</h3>
-                    <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Support James</span>
+        <div className="py-6 pb-24 mt-2">
+            <div className="flex flex-col items-center justify-center gap-4 rounded-2xl bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/10 dark:to-orange-900/10 p-6 border border-yellow-100 dark:border-yellow-500/20">
+                <div className="text-center space-y-1">
+                    <h3 className="text-base font-bold text-gray-900 dark:text-white">Enjoying CanadaCountDown?</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Support the development with a coffee!</p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
-                    <button onClick={() => handleTip('Snack')} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-amber-400 to-orange-400 text-white p-4 rounded-xl shadow-lg shadow-orange-500/20 active:scale-95 transition-transform group">
-                         <div className="flex items-center gap-3">
-                            <span className="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">🥨</span>
-                            <div className="flex flex-col items-start">
-                                <span className="text-[12px] font-bold">Snack</span>
-                                <span className="text-[10px] opacity-90 text-white/90">Treat me</span>
-                            </div>
-                         </div>
-                         <span className="text-[13px] font-bold bg-white/20 px-2 py-1 rounded-md">$1.99</span>
-                    </button>
-
-                    <button onClick={() => handleTip('Coffee')} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-[#FF9500] to-[#FF5E3A] text-white p-4 rounded-xl shadow-lg shadow-orange-500/20 active:scale-95 transition-transform group">
-                        <div className="flex items-center gap-3">
-                            <span className="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">☕</span>
-                            <div className="flex flex-col items-start">
-                                <span className="text-[12px] font-bold">Coffee</span>
-                                <span className="text-[10px] opacity-90 text-white/90">Fuel code</span>
-                            </div>
-                        </div>
-                        <span className="text-[13px] font-bold bg-white/20 px-2 py-1 rounded-md">$4.99</span>
-                    </button>
-
-                    <button onClick={() => handleTip('Lunch')} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-[#30B0C7] to-[#5856D6] text-white p-4 rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-transform group">
-                        <div className="flex items-center gap-3">
-                            <span className="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">🍱</span>
-                            <div className="flex flex-col items-start">
-                                <span className="text-[12px] font-bold">Lunch</span>
-                                <span className="text-[10px] opacity-90 text-white/90">Keep going</span>
-                            </div>
-                        </div>
-                        <span className="text-[13px] font-bold bg-white/20 px-2 py-1 rounded-md">$14.99</span>
-                    </button>
-
-                    <button onClick={() => handleTip('Gym Pass')} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-[#FF2D55] to-[#FF375F] text-white p-4 rounded-xl shadow-lg shadow-red-500/20 active:scale-95 transition-transform group">
-                        <div className="flex items-center gap-3">
-                            <span className="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">🏋️</span>
-                            <div className="flex flex-col items-start">
-                                <span className="text-[12px] font-bold">Gym</span>
-                                <span className="text-[10px] opacity-90 text-white/90">Monthly</span>
-                            </div>
-                        </div>
-                        <span className="text-[13px] font-bold bg-white/20 px-2 py-1 rounded-md">$29.99</span>
-                    </button>
-                </div>
-                <p className="text-center text-[10px] text-gray-400 mt-1 flex items-center justify-center gap-1">
-                    <span className="material-symbols-outlined text-[12px]">lock</span>
-                    Secure Payment Link
+                
+                <a 
+                   href="https://buymeacoffee.com/james.with.nani" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   className="flex w-full items-center justify-center gap-2 bg-[#FFDD00] text-black font-bold py-3 px-6 rounded-xl shadow-md hover:bg-[#ffea00] active:scale-95 transition-transform"
+                >
+                    <span className="text-xl">☕</span>
+                    <span>Buy me a coffee</span>
+                </a>
+                
+                <p className="text-[10px] text-gray-400 opacity-80">
+                    Secure payment via Buy Me a Coffee
                 </p>
             </div>
         </div>
