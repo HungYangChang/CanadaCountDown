@@ -1,3 +1,5 @@
+import { Language } from './translations';
+
 export interface TravelRecord {
   id: string;
   country: string;
@@ -12,12 +14,14 @@ export interface TempPresenceRecord {
   permitNumber?: string;
   startDate: string;
   endDate: string;
+  notes?: string;
   days: number; // calculated duration
 }
 
 export interface AppState {
   prDate: Date | null;
   darkMode: boolean;
+  language: Language;
   travelHistory: TravelRecord[];
   tempPresenceHistory: TempPresenceRecord[];
 }
@@ -25,6 +29,11 @@ export interface AppState {
 export interface AppContextType extends AppState {
   setPrDate: (date: Date | null) => void;
   toggleDarkMode: () => void;
+  setLanguage: (lang: Language) => void;
   addTravelRecord: (record: TravelRecord) => void;
+  updateTravelRecord: (record: TravelRecord) => void;
+  deleteTravelRecord: (id: string) => void;
   addTempPresenceRecord: (record: TempPresenceRecord) => void;
+  updateTempPresenceRecord: (record: TempPresenceRecord) => void;
+  deleteTempPresenceRecord: (id: string) => void;
 }

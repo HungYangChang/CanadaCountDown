@@ -3,20 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import BottomNav from '../components/BottomNav';
 import { formatDate, getDaysDiff } from '../utils';
+import { translations } from '../translations';
 
 const HomeScreen: React.FC = () => {
   const navigate = useNavigate();
-  const { prDate, travelHistory, tempPresenceHistory } = useApp();
+  const { prDate, travelHistory, tempPresenceHistory, language } = useApp();
+  const t = translations[language];
 
-  // Basic Calculation Logic (Simplified for demo)
-  // 1. Calculate days since PR
-  // 2. Add temporary residence credit (50% per day, max 365)
-  // 3. Subtract days absent (travel)
-  // 4. Target is 1095 days
-
+  // Basic Calculation Logic
   const today = new Date();
   
-  // Days since PR (assuming present since then)
+  // Days since PR
   let daysSincePr = 0;
   if (prDate) {
     daysSincePr = getDaysDiff(today, prDate);
@@ -25,10 +22,8 @@ const HomeScreen: React.FC = () => {
   // Temp Credit
   let tempCredit = 0;
   tempPresenceHistory.forEach(record => {
-    // 50% credit
     tempCredit += record.days * 0.5;
   });
-  // Max 365
   tempCredit = Math.min(tempCredit, 365);
 
   // Absence
@@ -36,10 +31,6 @@ const HomeScreen: React.FC = () => {
   travelHistory.forEach(trip => {
     daysAbsent += trip.days;
   });
-
-  // Since PR calculation normally subtracts absences from the period.
-  // We'll simplify: Total Credited = (Days Since PR - Days Absent AFTER PR) + Temp Credit
-  // For this demo, assuming all travel is after PR for simplicity unless we check dates.
   
   const totalCredited = Math.max(0, Math.floor(daysSincePr - daysAbsent + tempCredit));
   const required = 1095;
@@ -52,24 +43,32 @@ const HomeScreen: React.FC = () => {
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col">
-      <div className="flex flex-col gap-2 bg-background-light dark:bg-background-dark p-4 pb-0 sticky top-0 z-10 shadow-sm border-b border-gray-100 dark:border-gray-800 transition-colors">
-        <div className="flex items-center h-12 justify-between">
-          <div className="flex size-12 shrink-0 items-center text-gray-800 dark:text-white">
-            <span className="material-symbols-outlined !text-3xl text-primary">energy_savings_leaf</span>
+      {/* Standardized Header */}
+      <div className="sticky top-0 z-10 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-white/5 transition-colors">
+        <div className="flex items-center justify-between px-4 pt-14 pb-4 min-h-[88px]">
+          {/* Left Anchor - Canada Calendar Icon */}
+          <div className="flex w-16 justify-start shrink-0 items-center h-full">
+             <div className="flex flex-col items-center justify-center size-10 rounded-[10px] bg-white dark:bg-[#1A2532] shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-black/5 dark:ring-white/10 overflow-hidden shrink-0 group hover:scale-105 transition-transform duration-200">
+                <img 
+                    src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Canada.svg" 
+                    alt="Canada" 
+                    className="w-full h-full object-cover"
+                />
+             </div>
           </div>
-          <div className="flex w-12 items-center justify-end">
-            <button className="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 bg-transparent text-gray-800 dark:text-white gap-2 text-base font-bold leading-normal tracking-[0.015em] min-w-0 p-0">
-              <span className="material-symbols-outlined !text-3xl">account_circle</span>
-            </button>
-          </div>
-        </div>
-        <div className="flex flex-col items-center justify-center pt-6 pb-8 w-full">
-          <div className="flex items-center justify-center">
-            <span className="text-6xl font-black text-gray-900 dark:text-white tracking-tight leading-tight transition-colors">
+
+          {/* Center Content - Countdown */}
+          <div className="flex flex-1 flex-col items-center justify-center -mt-1">
+            <span className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none transition-colors">
                 {daysRemaining}
             </span>
+            <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider opacity-80 whitespace-nowrap">
+              {t.daysUntil}
+            </p>
           </div>
-          <p className="text-sm font-bold text-gray-500 dark:text-gray-400 mt-2 uppercase tracking-wide">days until eligibility</p>
+
+          {/* Right Anchor - Empty for Balance */}
+          <div className="w-16 shrink-0"></div>
         </div>
       </div>
       
@@ -84,89 +83,97 @@ const HomeScreen: React.FC = () => {
             <div className="flex flex-col gap-1 text-left">
               <div className="flex items-center gap-2 mb-2">
                 <span className="material-symbols-outlined text-gray-400 !text-xl fill">timelapse</span>
-                <p className="text-sm font-bold text-gray-600 dark:text-gray-300">Eligibility in progress</p>
+                <p className="text-sm font-bold text-gray-600 dark:text-gray-300">{t.eligibilityProgress}</p>
               </div>
             </div>
             <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
               <div className="bg-primary h-2.5 rounded-full transition-all duration-1000 ease-out" style={{width: `${progressPercent}%`}}></div>
             </div>
             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-              <span>{totalCredited} days credited</span>
-              <span>{required} days required</span>
+              <span>{totalCredited} {t.daysCredited}</span>
+              <span>{required} {t.daysRequired}</span>
             </div>
           </div>
           <div className="space-y-3 pt-2 border-t border-gray-200 dark:border-gray-700/50">
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-600 dark:text-gray-400">Total Presences</span>
+              <span className="text-gray-600 dark:text-gray-400">{t.totalPresences}</span>
               <span className="font-medium text-gray-900 dark:text-white">{totalCredited}</span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-gray-600 dark:text-gray-400">Earliest Eligibility</span>
+              <span className="text-gray-600 dark:text-gray-400">{t.earliestEligibility}</span>
               <span className="font-medium text-gray-900 dark:text-white">{prDate ? formatDate(eligibilityDate) : '-- --, ----'}</span>
             </div>
           </div>
         </div>
 
         <div className="flex flex-col gap-3">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">PR Information</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t.prInfo}</h2>
           <div className="flex flex-col gap-3">
+            {/* PR Date Card */}
             <button 
               onClick={() => navigate('/pr-day-input')}
-              className="w-full text-left flex items-center justify-between p-4 rounded-xl bg-gray-100/50 dark:bg-white/5 active:scale-[0.98] transition-all duration-100 ease-in-out cursor-pointer hover:bg-gray-200/50 dark:hover:bg-white/10 border border-transparent dark:border-white/5">
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-primary dark:text-blue-300">
-                  <span className="material-symbols-outlined">calendar_month</span>
+              className="group relative flex w-full items-center justify-between overflow-hidden rounded-2xl bg-gray-100 dark:bg-[#1A2532] p-4 transition-all active:scale-[0.98] border border-transparent dark:border-white/5 hover:bg-gray-200 dark:hover:bg-[#233040]">
+              <div className="flex items-center gap-4">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-blue-200/50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                   <span className="material-symbols-outlined">calendar_month</span>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-base font-bold text-gray-900 dark:text-white">
-                    {prDate ? formatDate(prDate) : 'Set PR Day'}
-                  </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {prDate ? 'Date you became a PR' : 'Set the date you became a PR'}
-                  </span>
+                <div className="flex flex-col items-start text-left">
+                   <span className="text-base font-bold text-gray-900 dark:text-white">
+                      {t.setPrDay}
+                   </span>
+                   <span className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      {prDate ? formatDate(prDate) : t.prDateDesc}
+                   </span>
                 </div>
               </div>
-              <span className="material-symbols-outlined text-gray-400">chevron_right</span>
+              <div className="flex items-center gap-3">
+                <span className="material-symbols-outlined text-gray-400 dark:text-gray-500">chevron_right</span>
+              </div>
             </button>
+
+            {/* Temporary Presence Card */}
             <button 
               onClick={() => navigate('/temporary-presence-history')}
-              className="w-full text-left flex items-center justify-between p-4 rounded-xl bg-gray-100/50 dark:bg-white/5 active:scale-[0.98] transition-all duration-100 ease-in-out cursor-pointer hover:bg-gray-200/50 dark:hover:bg-white/10 border border-transparent dark:border-white/5">
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-300">
-                  <span className="material-symbols-outlined">history</span>
+              className="group relative flex w-full items-center justify-between overflow-hidden rounded-2xl bg-gray-100 dark:bg-[#1A2532] p-4 transition-all active:scale-[0.98] border border-transparent dark:border-white/5 hover:bg-gray-200 dark:hover:bg-[#233040]">
+              <div className="flex items-center gap-4">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-orange-200/50 dark:bg-[#3d2922] text-orange-600 dark:text-[#e88c5d]">
+                   <span className="material-symbols-outlined">history</span>
                 </div>
-                <div className="flex flex-col">
-                  <span className="text-base font-bold text-gray-900 dark:text-white">Temporary Presence</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Time inside Canada before PR</span>
+                <div className="flex flex-col items-start text-left">
+                   <span className="text-base font-bold text-gray-900 dark:text-white">{t.tempPresence}</span>
+                   <span className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{t.tempPresenceDesc}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-bold text-gray-900 dark:text-white">{tempCredit} days</span>
-                <span className="material-symbols-outlined text-gray-400">chevron_right</span>
+              <div className="flex items-center gap-3">
+                <div className="flex flex-col items-end">
+                   <span className="text-lg font-bold text-gray-900 dark:text-white leading-none">{tempCredit}</span>
+                   <span className="text-xs font-bold text-gray-500 dark:text-gray-400 mt-1">days</span>
+                </div>
+                <span className="material-symbols-outlined text-gray-400 dark:text-gray-500">chevron_right</span>
               </div>
             </button>
           </div>
         </div>
 
         <div className="flex flex-col gap-3">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Your Presence Calculation</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 -mt-2">Calculated over the last 5 years.</p>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">{t.presenceCalc}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 -mt-2">{t.calcDesc}</p>
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1 rounded-xl bg-gray-100/50 dark:bg-white/5 p-4 border border-transparent dark:border-white/5">
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <span className="material-symbols-outlined !text-xl">flag</span>
-                <span>Days in Canada</span>
+                <span>{t.daysIn}</span>
               </div>
               <p className="text-4xl font-bold text-gray-900 dark:text-white">{totalCredited}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-500">Total days present</p>
+              <p className="text-sm text-gray-500 dark:text-gray-500">{t.totalDaysIn}</p>
             </div>
             <div className="flex flex-col gap-1 rounded-xl bg-gray-100/50 dark:bg-white/5 p-4 border border-transparent dark:border-white/5">
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                 <span className="material-symbols-outlined !text-xl">flight_takeoff</span>
-                <span>Days Outside</span>
+                <span>{t.daysOut}</span>
               </div>
               <p className="text-4xl font-bold text-gray-900 dark:text-white">{daysAbsent}</p>
-              <p className="text-sm text-gray-500 dark:text-gray-500">Total days absent</p>
+              <p className="text-sm text-gray-500 dark:text-gray-500">{t.totalDaysOut}</p>
             </div>
           </div>
         </div>
@@ -176,18 +183,20 @@ const HomeScreen: React.FC = () => {
             onClick={() => navigate('/travel-history')}
             className="flex flex-col gap-2 p-4 items-center justify-center overflow-hidden rounded-xl h-28 flex-1 bg-gray-100/50 dark:bg-white/5 text-gray-800 dark:text-white text-base font-bold leading-normal tracking-[0.015em] active:scale-[0.98] transition-all duration-100 ease-in-out cursor-pointer hover:bg-gray-200/50 dark:hover:bg-white/10 border border-transparent dark:border-white/5">
             <span className="material-symbols-outlined !text-3xl">history</span>
-            <span className="truncate text-sm font-medium">Travel History</span>
+            <span className="truncate text-sm font-medium">{t.travelHistory}</span>
           </button>
-          <button className="flex flex-col gap-2 p-4 items-center justify-center overflow-hidden rounded-xl h-28 flex-1 bg-gray-100/50 dark:bg-white/5 text-gray-800 dark:text-white text-base font-bold leading-normal tracking-[0.015em] active:scale-[0.98] transition-all duration-100 ease-in-out cursor-pointer hover:bg-gray-200/50 dark:hover:bg-white/10 border border-transparent dark:border-white/5">
+          <button 
+            onClick={() => navigate('/travel-entry')}
+            className="flex flex-col gap-2 p-4 items-center justify-center overflow-hidden rounded-xl h-28 flex-1 bg-gray-100/50 dark:bg-white/5 text-gray-800 dark:text-white text-base font-bold leading-normal tracking-[0.015em] active:scale-[0.98] transition-all duration-100 ease-in-out cursor-pointer hover:bg-gray-200/50 dark:hover:bg-white/10 border border-transparent dark:border-white/5">
             <span className="material-symbols-outlined !text-3xl">add_location_alt</span>
-            <span className="truncate text-sm font-medium">Add New Trip</span>
+            <span className="truncate text-sm font-medium">{t.addTrip}</span>
           </button>
         </div>
         
         <div className="flex-grow"></div>
         <div className="py-3 pb-24">
             <button className="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-12 px-5 flex-1 w-full bg-primary text-white text-base font-bold leading-normal tracking-[0.015em] active:scale-[0.98] transition-transform duration-100 ease-in-out shadow-lg shadow-blue-500/30">
-                <span className="truncate">Tip James</span>
+                <span className="truncate">{t.tip}</span>
             </button>
         </div>
       </main>

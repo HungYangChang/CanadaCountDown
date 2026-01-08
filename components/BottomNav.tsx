@@ -1,8 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useApp } from '../context/AppContext';
+import { translations } from '../translations';
 
 const BottomNav: React.FC = () => {
   const location = useLocation();
+  const { language } = useApp();
+  const t = translations[language];
+  
   const isActive = (path: string) => location.pathname === path;
 
   return (
@@ -12,21 +17,21 @@ const BottomNav: React.FC = () => {
           <div className={`flex h-8 w-16 items-center justify-center rounded-full transition-colors ${isActive('/') ? 'bg-primary/20 dark:bg-blue-900/50 text-primary dark:text-blue-200' : 'text-gray-500 dark:text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/5'}`}>
             <span className={`material-symbols-outlined !text-2xl ${isActive('/') ? 'fill' : ''}`}>home</span>
           </div>
-          <p className={`text-[10px] font-medium transition-colors ${isActive('/') ? 'text-primary dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>Home</p>
+          <p className={`text-[10px] font-medium transition-colors ${isActive('/') ? 'text-primary dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>{t.home}</p>
         </Link>
         
         <Link to="/travel-history" className={`flex flex-col items-center justify-center gap-1 group pb-5 pt-1`}>
           <div className={`flex h-8 w-16 items-center justify-center rounded-full transition-colors ${isActive('/travel-history') ? 'bg-primary/20 dark:bg-blue-900/50 text-primary dark:text-blue-200' : 'text-gray-500 dark:text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/5'}`}>
             <span className={`material-symbols-outlined !text-2xl ${isActive('/travel-history') ? 'fill' : ''}`}>flight_takeoff</span>
           </div>
-          <p className={`text-[10px] font-medium transition-colors ${isActive('/travel-history') ? 'text-primary dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>Travel</p>
+          <p className={`text-[10px] font-medium transition-colors ${isActive('/travel-history') ? 'text-primary dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>{t.travel}</p>
         </Link>
 
         <Link to="/settings" className={`flex flex-col items-center justify-center gap-1 group pb-5 pt-1`}>
           <div className={`flex h-8 w-16 items-center justify-center rounded-full transition-colors ${isActive('/settings') ? 'bg-primary/20 dark:bg-blue-900/50 text-primary dark:text-blue-200' : 'text-gray-500 dark:text-gray-400 group-hover:bg-gray-100 dark:group-hover:bg-white/5'}`}>
             <span className={`material-symbols-outlined !text-2xl ${isActive('/settings') ? 'fill' : ''}`}>settings</span>
           </div>
-          <p className={`text-[10px] font-medium transition-colors ${isActive('/settings') ? 'text-primary dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>Settings</p>
+          <p className={`text-[10px] font-medium transition-colors ${isActive('/settings') ? 'text-primary dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>{t.settings}</p>
         </Link>
       </div>
     </div>

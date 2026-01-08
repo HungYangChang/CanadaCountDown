@@ -4,45 +4,35 @@ import BottomNav from '../components/BottomNav';
 import { useApp } from '../context/AppContext';
 import Calendar from '../components/Calendar';
 import { getDaysDiff, formatDate } from '../utils';
-import { TempPresenceRecord } from '../types';
+import { TravelRecord } from '../types';
 
-const TempPresenceEntryScreen: React.FC = () => {
+const TravelEntryScreen: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { tempPresenceHistory, addTempPresenceRecord, updateTempPresenceRecord, deleteTempPresenceRecord } = useApp();
+  const { travelHistory, addTravelRecord, updateTravelRecord, deleteTravelRecord } = useApp();
 
-  const [type, setType] = useState<TempPresenceRecord['type']>('Student');
+  const [country, setCountry] = useState('');
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const [permitNumber, setPermitNumber] = useState('');
-  const [notes, setNotes] = useState('');
   
   const [showCalendar, setShowCalendar] = useState<'start' | 'end' | null>(null);
 
   useEffect(() => {
     if (id) {
-      const record = tempPresenceHistory.find(r => r.id === id);
+      const record = travelHistory.find(r => r.id === id);
       if (record) {
-        setType(record.type);
-        // Dates need to be parsed properly from string to work with Calendar (which expects Date object or similar)
-        // Stored as string 'YYYY-MM-DD' usually in types.ts but here we convert
-        // Fix: `types.ts` defines startDate as string.
+        setCountry(record.country);
         const sParts = record.startDate.split('-').map(Number);
         const eParts = record.endDate.split('-').map(Number);
-        // Date(year, monthIndex, day)
         setStartDate(new Date(sParts[0], sParts[1] - 1, sParts[2]));
         setEndDate(new Date(eParts[0], eParts[1] - 1, eParts[2]));
-        
-        setPermitNumber(record.permitNumber || '');
-        setNotes(record.notes || '');
       }
     }
-  }, [id, tempPresenceHistory]);
+  }, [id, travelHistory]);
 
   const handleSave = () => {
-    if (!startDate || !endDate) return;
+    if (!startDate || !endDate || !country.trim()) return;
 
-    // Format YYYY-MM-DD manually to avoid timezone issues with toISOString()
     const formatYMD = (d: Date) => {
         const y = d.getFullYear();
         const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -50,35 +40,32 @@ const TempPresenceEntryScreen: React.FC = () => {
         return `${y}-${m}-${day}`;
     };
 
-    const diff = getDaysDiff(startDate, endDate) + 1; // Inclusive
+    const diff = getDaysDiff(startDate, endDate) + 1;
     
-    const record: TempPresenceRecord = {
+    const record: TravelRecord = {
       id: id || Date.now().toString(),
-      type,
+      country: country.trim(),
       startDate: formatYMD(startDate),
       endDate: formatYMD(endDate),
       days: diff > 0 ? diff : 0,
-      permitNumber,
-      notes
     };
 
     if (id) {
-      updateTempPresenceRecord(record);
+      updateTravelRecord(record);
     } else {
-      addTempPresenceRecord(record);
+      addTravelRecord(record);
     }
-    navigate('/temporary-presence-history');
+    navigate('/travel-history');
   };
 
   const handleDelete = () => {
     if (id) {
-      deleteTempPresenceRecord(id);
-      navigate('/temporary-presence-history');
+      deleteTravelRecord(id);
+      navigate('/travel-history');
     }
   };
 
   const duration = (startDate && endDate) ? (getDaysDiff(startDate, endDate) + 1) : 0;
-  const credit = Math.floor(duration * 0.5);
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display antialiased text-[#111418] dark:text-white overflow-x-hidden relative transition-colors">
@@ -87,20 +74,33 @@ const TempPresenceEntryScreen: React.FC = () => {
           onClick={() => navigate(-1)}
           className="text-primary/80 dark:text-[#9dabb9] text-base font-medium leading-normal hover:opacity-70 transition-opacity">Cancel</button>
         <h1 className="text-[#111418] dark:text-white text-[17px] font-bold leading-tight absolute left-1/2 -translate-x-1/2 w-max">
-            {id ? 'Edit Entry' : 'New Entry'}
+            {id ? 'Edit Trip' : 'New Trip'}
         </h1>
         <button 
           onClick={handleSave}
-          disabled={!startDate || !endDate}
+          disabled={!startDate || !endDate || !country.trim()}
           className="text-primary text-base font-bold leading-normal hover:opacity-80 transition-opacity disabled:opacity-30 disabled:cursor-not-allowed">Save</button>
       </div>
       
       <div className="flex-1 overflow-y-auto pb-32">
         <div className="px-5 pt-6 pb-2">
-          <h2 className="text-[#111418] dark:text-white text-2xl font-bold leading-tight tracking-tight">{id ? 'Edit Status' : 'Add Status'}</h2>
-          <p className="text-[#6b7280] dark:text-[#9dabb9] text-sm mt-1">Record your temporary status in Canada.</p>
+          <h2 className="text-[#111418] dark:text-white text-2xl font-bold leading-tight tracking-tight">{id ? 'Edit Trip' : 'Add Trip'}</h2>
+          <p className="text-[#6b7280] dark:text-[#9dabb9] text-sm mt-1">Record days spent outside Canada.</p>
         </div>
         
+        <div className="mt-4 px-5">
+           <label className="flex flex-col">
+              <span className="text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Destination</span>
+              <input 
+                type="text"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-full rounded-xl border-gray-200 dark:border-[#3b4754] bg-white dark:bg-[#1c2127] text-[#111418] dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent h-12 px-4 text-base font-normal placeholder:text-gray-400 dark:placeholder:text-[#586370] shadow-sm mb-2"
+                placeholder="e.g. United States"
+              />
+            </label>
+        </div>
+
         <div className="mt-4">
           <div className="px-5 pb-3">
             <h3 className="text-[#111418] dark:text-white text-sm font-bold uppercase tracking-wide opacity-80">Timeframe</h3>
@@ -110,12 +110,12 @@ const TempPresenceEntryScreen: React.FC = () => {
             
             {/* Start Date Field */}
             <div className="relative group">
-              <label className="block text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Start Date</label>
+              <label className="block text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Departure Date</label>
               <div 
                 onClick={() => setShowCalendar(showCalendar === 'start' ? null : 'start')}
                 className={`relative w-full rounded-xl border border-gray-200 dark:border-[#3b4754] bg-[#f9fafb] dark:bg-[#101922] h-12 pl-4 pr-10 flex items-center shadow-sm transition-all cursor-pointer ${showCalendar === 'start' ? 'ring-2 ring-primary border-transparent' : ''}`}>
                  <span className={`text-base font-medium ${startDate ? 'text-[#111418] dark:text-white' : 'text-gray-400'}`}>
-                    {startDate ? formatDate(startDate) : 'Select Start Date'}
+                    {startDate ? formatDate(startDate) : 'Select Date'}
                  </span>
                  <span className="material-symbols-outlined absolute right-3 text-gray-400">calendar_month</span>
               </div>
@@ -134,12 +134,12 @@ const TempPresenceEntryScreen: React.FC = () => {
 
             {/* End Date Field */}
             <div className="relative group">
-              <label className="block text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">End Date</label>
+              <label className="block text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Return Date</label>
               <div 
                 onClick={() => setShowCalendar(showCalendar === 'end' ? null : 'end')}
                 className={`relative w-full rounded-xl border border-gray-200 dark:border-[#3b4754] bg-[#f9fafb] dark:bg-[#101922] h-12 pl-4 pr-10 flex items-center shadow-sm transition-all cursor-pointer ${showCalendar === 'end' ? 'ring-2 ring-primary border-transparent' : ''}`}>
                  <span className={`text-base font-medium ${endDate ? 'text-[#111418] dark:text-white' : 'text-gray-400'}`}>
-                    {endDate ? formatDate(endDate) : 'Select End Date'}
+                    {endDate ? formatDate(endDate) : 'Select Date'}
                  </span>
                  <span className="material-symbols-outlined absolute right-3 text-gray-400">calendar_month</span>
               </div>
@@ -161,68 +161,15 @@ const TempPresenceEntryScreen: React.FC = () => {
           <div className="px-5 mt-4">
             <div className="bg-primary/10 dark:bg-primary/20 rounded-xl p-4 flex items-start gap-3 border border-primary/10 dark:border-primary/5">
               <div className="bg-primary/20 rounded-full p-1 shrink-0">
-                <span className="material-symbols-outlined text-primary text-[20px] block">calculate</span>
+                <span className="material-symbols-outlined text-primary text-[20px] block">flight_takeoff</span>
               </div>
               <div className="flex flex-col">
-                <p className="text-[#111418] dark:text-white text-sm font-bold">{duration > 0 ? duration : 0} Days Duration</p>
+                <p className="text-[#111418] dark:text-white text-sm font-bold">{duration > 0 ? duration : 0} Days Absent</p>
                 <p className="text-[#4e7397] dark:text-[#aabacf] text-xs font-medium leading-relaxed mt-0.5">
-                  This period counts for 0.5 days per day towards citizenship. <br/>
-                  <span className="text-primary font-bold">Total Credit: {credit} days</span>
+                  These days will be subtracted from your physical presence count.
                 </p>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="h-6"></div>
-        
-        <div className="mt-2">
-          <div className="px-5 pb-3">
-            <h3 className="text-[#111418] dark:text-white text-sm font-bold uppercase tracking-wide opacity-80">Details</h3>
-          </div>
-          <div className="px-5 flex flex-col gap-6">
-            <div className="flex flex-col">
-              <span className="text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Purpose of Stay</span>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {(['Student', 'Worker', 'Visitor', 'Claimant'] as const).map((t) => (
-                    <button 
-                        key={t}
-                        onClick={() => setType(t)}
-                        className={`relative flex flex-col items-center justify-center p-3 rounded-xl border transition-all active:scale-95 ${
-                            type === t 
-                            ? 'bg-primary text-white border-primary shadow-md' 
-                            : 'bg-white dark:bg-[#1c2127] text-[#6b7280] dark:text-[#9dabb9] border-gray-200 dark:border-[#3b4754] hover:bg-gray-50 dark:hover:bg-[#252b32]'
-                        }`}>
-                        <span className="material-symbols-outlined text-[24px] mb-1">
-                            {t === 'Student' ? 'school' : t === 'Worker' ? 'work' : t === 'Visitor' ? 'flight' : 'gavel'}
-                        </span>
-                        <span className="text-xs font-bold">{t}</span>
-                        {type === t && <div className="absolute top-2 right-2 w-2 h-2 bg-white rounded-full"></div>}
-                    </button>
-                ))}
-              </div>
-            </div>
-            
-            <label className="flex flex-col">
-              <span className="text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Permit Number</span>
-              <input 
-                type="text"
-                value={permitNumber}
-                onChange={(e) => setPermitNumber(e.target.value)}
-                className="w-full rounded-xl border-gray-200 dark:border-[#3b4754] bg-white dark:bg-[#1c2127] text-[#111418] dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent h-12 px-4 text-base font-normal placeholder:text-gray-400 dark:placeholder:text-[#586370] shadow-sm mb-2"
-                placeholder="e.g. SP123456789"
-              />
-            </label>
-
-            <label className="flex flex-col">
-              <span className="text-[#6b7280] dark:text-[#9dabb9] text-xs font-semibold uppercase tracking-wider mb-2 ml-1">Notes</span>
-              <textarea 
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="form-textarea w-full rounded-xl border-gray-200 dark:border-[#3b4754] bg-white dark:bg-[#1c2127] text-[#111418] dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent min-h-[100px] p-4 text-base font-normal leading-relaxed placeholder:text-gray-400 dark:placeholder:text-[#586370] resize-none shadow-sm" 
-                placeholder="Optional notes..."
-              ></textarea>
-            </label>
           </div>
         </div>
 
@@ -232,7 +179,7 @@ const TempPresenceEntryScreen: React.FC = () => {
                 onClick={handleDelete}
                 className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-900/10 text-red-600 dark:text-red-400 font-bold text-base hover:bg-red-100 dark:hover:bg-red-900/20 active:scale-[0.98] transition-all">
                 <span className="material-symbols-outlined text-[20px]">delete</span>
-                Delete Entry
+                Delete Trip
             </button>
             </div>
         )}
@@ -242,4 +189,4 @@ const TempPresenceEntryScreen: React.FC = () => {
   );
 };
 
-export default TempPresenceEntryScreen;
+export default TravelEntryScreen;
