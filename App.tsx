@@ -1,5 +1,6 @@
 import React from 'react';
 import { HashRouter, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { AppProvider } from './context/AppContext';
 
 import HomeScreen from './pages/Home';
@@ -31,6 +32,7 @@ const App: React.FC = () => {
           <Route path="/temporary-presence-entry" element={<TempPresenceEntryScreen />} />
           <Route path="/temporary-presence-entry/:id" element={<TempPresenceEntryScreen />} />
         </Routes>
+        <Analytics />
       </HashRouter>
     </AppProvider>
   );
