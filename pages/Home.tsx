@@ -45,51 +45,28 @@ const HomeScreen: React.FC = () => {
   const eligibilityDate = new Date();
   eligibilityDate.setDate(today.getDate() + daysRemaining);
 
-  const handleTip = async (item: string, price: number) => {
-    // This simulates the Apple Pay / Web Payment interaction
-    try {
-        if ('PaymentRequest' in window) {
-             // Cast to any to avoid TypeScript strict type checking issues with specific string literals
-             // for merchantCapabilities and supportedNetworks which can vary by TS version/lib
-             const supportedInstruments = [{
-                supportedMethods: 'https://apple.com/apple-pay',
-                data: {
-                    version: 3,
-                    merchantIdentifier: 'merchant.com.example', // Placeholder
-                    merchantCapabilities: ['supports3DS'],
-                    supportedNetworks: ['masterCard', 'visa', 'amex'],
-                    countryCode: 'CA',
-                }
-            }] as any;
-            
-            const details = {
-                total: {
-                    label: `Support James - ${item}`,
-                    amount: { currency: 'CAD', value: price.toString() }
-                }
-            };
-            
-            // Note: This will likely throw in a non-HTTPS/non-merchant environment
-            // We use it to show intent of "real" implementation
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const request = new (window as any).PaymentRequest(supportedInstruments, details);
-            const canMakePayment = await request.canMakePayment().catch(() => false);
-            
-            if (canMakePayment) {
-                const response = await request.show();
-                await response.complete('success');
-                alert("Thank you for your support!");
-                return;
-            }
-        }
-    } catch (e) {
-        console.log("Payment request failed, falling back to simulation", e);
-    }
+  const handleTip = (item: string) => {
+    // ---------------------------------------------------------
+    // CONFIGURE YOUR PAYMENT LINKS HERE
+    // 1. Go to Stripe.com -> Products -> Create Payment Link
+    // 2. Or use buymeacoffee.com
+    // 3. Paste the URLs below
+    // ---------------------------------------------------------
+    const paymentLinks: Record<string, string> = {
+        'Snack': 'https://buymeacoffee.com/james.with.nani', 
+        'Coffee': 'https://buymeacoffee.com/james.with.nani',
+        'Lunch': 'https://buymeacoffee.com/james.with.nani',
+        'Gym Pass': 'https://buymeacoffee.com/james.with.nani',
+    };
 
-    // Fallback Simulation
-    const confirmed = window.confirm(`Confirm Payment\n\nItem: ${item}\nAmount: $${price}\n\nProceed with payment?`);
-    if (confirmed) {
-        alert("Payment Successful! Thank you for your support.");
+    const link = paymentLinks[item];
+
+    if (link && !link.includes('PLACEHOLDER')) {
+        // Open the secure payment page in a new tab
+        window.open(link, '_blank');
+    } else {
+        // Fallback if you haven't set up links yet
+        alert(`To enable payments, please create Payment Links in Stripe or BuyMeACoffee and paste the URLs into pages/Home.tsx.\n\nYou selected: ${item}`);
     }
   };
 
@@ -280,7 +257,7 @@ const HomeScreen: React.FC = () => {
                     <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">Support James</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
-                    <button onClick={() => handleTip('Snack', 1.99)} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-amber-400 to-orange-400 text-white p-4 rounded-xl shadow-lg shadow-orange-500/20 active:scale-95 transition-transform group">
+                    <button onClick={() => handleTip('Snack')} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-amber-400 to-orange-400 text-white p-4 rounded-xl shadow-lg shadow-orange-500/20 active:scale-95 transition-transform group">
                          <div className="flex items-center gap-3">
                             <span className="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">🥨</span>
                             <div className="flex flex-col items-start">
@@ -291,7 +268,7 @@ const HomeScreen: React.FC = () => {
                          <span className="text-[13px] font-bold bg-white/20 px-2 py-1 rounded-md">$1.99</span>
                     </button>
 
-                    <button onClick={() => handleTip('Coffee', 4.99)} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-[#FF9500] to-[#FF5E3A] text-white p-4 rounded-xl shadow-lg shadow-orange-500/20 active:scale-95 transition-transform group">
+                    <button onClick={() => handleTip('Coffee')} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-[#FF9500] to-[#FF5E3A] text-white p-4 rounded-xl shadow-lg shadow-orange-500/20 active:scale-95 transition-transform group">
                         <div className="flex items-center gap-3">
                             <span className="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">☕</span>
                             <div className="flex flex-col items-start">
@@ -302,7 +279,7 @@ const HomeScreen: React.FC = () => {
                         <span className="text-[13px] font-bold bg-white/20 px-2 py-1 rounded-md">$4.99</span>
                     </button>
 
-                    <button onClick={() => handleTip('Lunch', 14.99)} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-[#30B0C7] to-[#5856D6] text-white p-4 rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-transform group">
+                    <button onClick={() => handleTip('Lunch')} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-[#30B0C7] to-[#5856D6] text-white p-4 rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-transform group">
                         <div className="flex items-center gap-3">
                             <span className="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">🍱</span>
                             <div className="flex flex-col items-start">
@@ -313,7 +290,7 @@ const HomeScreen: React.FC = () => {
                         <span className="text-[13px] font-bold bg-white/20 px-2 py-1 rounded-md">$14.99</span>
                     </button>
 
-                    <button onClick={() => handleTip('Gym Pass', 29.99)} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-[#FF2D55] to-[#FF375F] text-white p-4 rounded-xl shadow-lg shadow-red-500/20 active:scale-95 transition-transform group">
+                    <button onClick={() => handleTip('Gym Pass')} className="flex flex-row items-center justify-between gap-3 bg-gradient-to-r from-[#FF2D55] to-[#FF375F] text-white p-4 rounded-xl shadow-lg shadow-red-500/20 active:scale-95 transition-transform group">
                         <div className="flex items-center gap-3">
                             <span className="text-2xl filter drop-shadow-sm group-hover:scale-110 transition-transform">🏋️</span>
                             <div className="flex flex-col items-start">
@@ -326,7 +303,7 @@ const HomeScreen: React.FC = () => {
                 </div>
                 <p className="text-center text-[10px] text-gray-400 mt-1 flex items-center justify-center gap-1">
                     <span className="material-symbols-outlined text-[12px]">lock</span>
-                    Processed securely via Apple Pay
+                    Secure Payment Link
                 </p>
             </div>
         </div>
