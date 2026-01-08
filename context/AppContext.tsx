@@ -1,14 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { AppState, AppContextType, TravelRecord, TempPresenceRecord } from '../types';
+import { AppContextType, TravelRecord, TempPresenceRecord } from '../types';
 import { Language } from '../translations';
-
-const defaultState: AppState = {
-  prDate: null,
-  darkMode: true,
-  language: 'en',
-  travelHistory: [],
-  tempPresenceHistory: [],
-};
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
