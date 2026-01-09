@@ -10,7 +10,7 @@ const TravelHistoryScreen: React.FC = () => {
 
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden transition-colors">
-      <header className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-6 pb-3 pt-12 border-b border-transparent dark:border-white/5">
+      <header className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-6 pb-3 pt-[calc(env(safe-area-inset-top)+24px)] border-b border-transparent dark:border-white/5">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Travel History</h1>
         <button 
           onClick={() => navigate('/travel-entry')}

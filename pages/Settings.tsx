@@ -47,7 +47,7 @@ const SettingsScreen: React.FC = () => {
   return (
     <div className="relative flex h-auto min-h-screen w-full flex-col">
       {/* Standardized Header */}
-      <div className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-6 pb-4 pt-14 border-b border-transparent dark:border-white/5 transition-colors min-h-[88px]">
+      <div className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-6 pb-4 pt-[calc(env(safe-area-inset-top)+32px)] border-b border-transparent dark:border-white/5 transition-colors min-h-[88px]">
          <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight leading-tight">{t.settings}</h1>
          <div className="w-10 h-10"></div>
       </div>

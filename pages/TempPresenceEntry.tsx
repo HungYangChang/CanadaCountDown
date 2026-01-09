@@ -107,7 +107,7 @@ const TempPresenceEntryScreen: React.FC = () => {
         </div>
       )}
 
-      <div className="sticky top-0 z-50 bg-background-light/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-6 pt-12 pb-3 flex items-center justify-between transition-colors">
+      <div className="sticky top-0 z-50 bg-background-light/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-6 pt-[calc(env(safe-area-inset-top)+24px)] pb-3 flex items-center justify-between transition-colors">
         <button 
           onClick={() => navigate(-1)}
           className="text-primary text-[16px] cursor-pointer hover:opacity-70 transition-opacity active:opacity-50">Cancel</button>

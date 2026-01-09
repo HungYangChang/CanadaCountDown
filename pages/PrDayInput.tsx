@@ -18,7 +18,7 @@ const PrDayInputScreen: React.FC = () => {
 
   return (
     <div className="relative flex h-full min-h-screen w-full flex-col overflow-hidden bg-background-light dark:bg-black font-display antialiased">
-      <header className="flex items-center bg-background-light/95 dark:bg-black/90 px-6 pt-12 pb-3 justify-between sticky top-0 z-20 backdrop-blur-md border-b border-gray-200/50 dark:border-white/5">
+      <header className="flex items-center bg-background-light/95 dark:bg-black/90 px-6 pt-[calc(env(safe-area-inset-top)+24px)] pb-3 justify-between sticky top-0 z-20 backdrop-blur-md border-b border-gray-200/50 dark:border-white/5">
         <button 
           onClick={() => navigate('/')}
           className="text-primary flex items-center gap-1 -ml-2 px-2 py-1 rounded-lg active:opacity-50 transition-opacity">

@@ -10,7 +10,7 @@ const AboutScreen: React.FC = () => {
 
     return (
         <div className="relative flex h-auto min-h-screen w-full flex-col bg-background-light dark:bg-background-dark overflow-x-hidden transition-colors">
-            <header className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light dark:bg-background-dark px-6 pb-2 pt-12">
+            <header className="sticky top-0 z-10 flex h-auto shrink-0 items-center justify-between bg-background-light dark:bg-background-dark px-6 pb-2 pt-[calc(env(safe-area-inset-top)+24px)]">
                 <div className="flex items-center gap-2">
                     <Link to="/settings" className="flex size-10 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors text-gray-900 dark:text-white">
                         <span className="material-symbols-outlined">arrow_back</span>

@@ -33,7 +33,7 @@ const TempPresenceHistoryScreen: React.FC = () => {
 
   return (
     <div className="bg-background-light dark:bg-background-dark min-h-screen flex flex-col font-display antialiased text-[#111418] dark:text-white overflow-x-hidden relative transition-colors">
-      <div className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-[#e5e7eb] dark:border-[#293038] px-6 pt-12 pb-2 h-auto flex items-center justify-between transition-colors">
+      <div className="sticky top-0 z-50 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-[#e5e7eb] dark:border-[#293038] px-6 pt-[calc(env(safe-area-inset-top)+24px)] pb-2 h-auto flex items-center justify-between transition-colors">
         <button 
           onClick={() => navigate('/')}
           className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors -ml-2 text-[#111418] dark:text-white">
