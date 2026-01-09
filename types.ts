@@ -24,6 +24,7 @@ export interface AppState {
   language: Language;
   travelHistory: TravelRecord[];
   tempPresenceHistory: TempPresenceRecord[];
+  includeFutureTravel: boolean;
 }
 
 export interface AppContextType extends AppState {
@@ -36,4 +37,5 @@ export interface AppContextType extends AppState {
   addTempPresenceRecord: (record: TempPresenceRecord) => void;
   updateTempPresenceRecord: (record: TempPresenceRecord) => void;
   deleteTempPresenceRecord: (id: string) => void;
+  toggleFutureTravel: () => void;
 }

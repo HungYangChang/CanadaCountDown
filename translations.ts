@@ -44,7 +44,8 @@ export const translations = {
     features: "Features",
     appName: "CanadaCountDown",
     aboutText: "CanadaCountDown manages your physical presence in Canada. You are no longer required to manually calculate the earliest eligibility.",
-    aboutNote: "This app is never a replacement to the official physical presence calculator but rather serves as a reference tool."
+    aboutNote: "This app is never a replacement to the official physical presence calculator but rather serves as a reference tool.",
+    considerFutureTravel: "Consider future travel"
   },
   fr: {
     home: "Accueil",
@@ -88,7 +89,8 @@ export const translations = {
     features: "Fonctionnalités",
     appName: "CanadaCountDown",
     aboutText: "CanadaCountDown gère votre présence physique au Canada. Vous n'avez plus besoin de calculer manuellement votre éligibilité.",
-    aboutNote: "Cette application ne remplace jamais le calculateur officiel de présence physique mais sert plutôt d'outil de référence."
+    aboutNote: "Cette application ne remplace jamais le calculateur officiel de présence physique mais sert plutôt d'outil de référence.",
+    considerFutureTravel: "Inclure voyages futurs"
   },
   zh_CN: {
     home: "首页",
@@ -132,7 +134,8 @@ export const translations = {
     features: "功能",
     appName: "CanadaCountDown",
     aboutText: "CanadaCountDown 管理您在加拿大的实际居住时间。您不再需要手动计算最早的入籍资格日期。",
-    aboutNote: "此应用程序仅作为参考工具，不能替代官方的实际居住计算器。"
+    aboutNote: "此应用程序仅作为参考工具，不能替代官方的实际居住计算器。",
+    considerFutureTravel: "计算未来行程"
   },
   zh_TW: {
     home: "首頁",
@@ -176,6 +179,7 @@ export const translations = {
     features: "功能",
     appName: "CanadaCountDown",
     aboutText: "CanadaCountDown 管理您在加拿大的實際居住時間。您不再需要手動計算最早的入籍資格日期。",
-    aboutNote: "此應用程式僅作為參考工具，不能替代官方的實際居住計算器。"
+    aboutNote: "此應用程式僅作為參考工具，不能替代官方的實際居住計算器。",
+    considerFutureTravel: "計算未來行程"
   }
 };

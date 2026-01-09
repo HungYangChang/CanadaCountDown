@@ -10,6 +10,7 @@ const STORAGE_KEYS = {
   LANGUAGE: 'ccd_language',
   TRAVEL_HISTORY: 'ccd_travel_history',
   TEMP_PRESENCE: 'ccd_temp_presence',
+  FUTURE_TRAVEL: 'ccd_future_travel',
 };
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -61,6 +62,15 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     }
   });
 
+  const [includeFutureTravel, setIncludeFutureTravel] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEYS.FUTURE_TRAVEL);
+      return saved ? JSON.parse(saved) : true; // Default to true
+    } catch (e) {
+      return true;
+    }
+  });
+
   // 2. Effects to Save to LocalStorage whenever state changes
 
   useEffect(() => {
@@ -94,6 +104,10 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     localStorage.setItem(STORAGE_KEYS.TEMP_PRESENCE, JSON.stringify(tempPresenceHistory));
   }, [tempPresenceHistory]);
 
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.FUTURE_TRAVEL, JSON.stringify(includeFutureTravel));
+  }, [includeFutureTravel]);
+
 
   // 3. Actions
 
@@ -119,6 +133,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setTempPresenceHistory(prev => prev.filter(r => r.id !== id));
   };
 
+  const toggleFutureTravel = () => setIncludeFutureTravel(prev => !prev);
+
   return (
     <AppContext.Provider value={{
       prDate,
@@ -126,6 +142,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       language,
       travelHistory,
       tempPresenceHistory,
+      includeFutureTravel,
       setPrDate,
       toggleDarkMode,
       setLanguage,
@@ -134,7 +151,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       deleteTravelRecord,
       addTempPresenceRecord,
       updateTempPresenceRecord,
-      deleteTempPresenceRecord
+      deleteTempPresenceRecord,
+      toggleFutureTravel
     }}>
       {children}
     </AppContext.Provider>
