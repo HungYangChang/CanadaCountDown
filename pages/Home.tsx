@@ -50,12 +50,12 @@ const HomeScreen: React.FC = () => {
       {/* Standardized Header */}
       <div className="sticky top-0 z-10 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md shadow-sm border-b border-gray-100 dark:border-white/5 transition-colors">
         <div className="flex items-center justify-between px-6 pt-[calc(env(safe-area-inset-top)+24px)] pb-2 min-h-[70px]">
-          {/* Left Anchor - App Icon */}
+          {/* Left Anchor - Canada Calendar Icon */}
           <div className="flex w-16 justify-start shrink-0 items-center h-full">
              <div className="flex flex-col items-center justify-center size-9 rounded-[8px] bg-white dark:bg-[#1A2532] shadow-[0_2px_8px_rgba(0,0,0,0.08)] ring-1 ring-black/5 dark:ring-white/10 overflow-hidden shrink-0 group hover:scale-105 transition-transform duration-200">
                 <img 
-                    src="/icon.png" 
-                    alt="App Icon" 
+                    src="https://upload.wikimedia.org/wikipedia/commons/c/cf/Flag_of_Canada.svg" 
+                    alt="Canada" 
                     className="w-full h-full object-cover"
                 />
              </div>
