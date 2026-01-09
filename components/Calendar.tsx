@@ -17,14 +17,13 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
   // Sync viewDate when selectedDate prop changes externally
   useEffect(() => {
     if (selectedDate) {
-      // Only update view if the selected date is in a different month/year to avoid resetting navigation
-      const currentViewMonth = viewDate.getMonth();
-      const currentViewYear = viewDate.getFullYear();
-      if (selectedDate.getMonth() !== currentViewMonth || selectedDate.getFullYear() !== currentViewYear) {
-         setViewDate(new Date(selectedDate));
-      }
+       setViewDate(prev => {
+           // Only update view if the selected date is in a different month/year
+           const isSameMonth = prev.getMonth() === selectedDate.getMonth() && prev.getFullYear() === selectedDate.getFullYear();
+           return isSameMonth ? prev : new Date(selectedDate);
+       });
     }
-  }, [selectedDate]); // Intentionally exclude viewDate to prevent loops
+  }, [selectedDate]); 
 
   const currentYear = viewDate.getFullYear();
   const currentMonth = viewDate.getMonth();
@@ -37,6 +36,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
         e.preventDefault();
         e.stopPropagation();
     }
+    // Set day to 1 to avoid overflow when subtracting month from 31st
     const baseDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
     const newDate = addMonths(baseDate, -1);
     if (newDate.getFullYear() >= minYear) {
@@ -49,6 +49,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
         e.preventDefault();
         e.stopPropagation();
     }
+    // Set day to 1 to avoid overflow
     const baseDate = new Date(viewDate.getFullYear(), viewDate.getMonth(), 1);
     const newDate = addMonths(baseDate, 1);
     if (newDate.getFullYear() <= maxYear) {
@@ -66,15 +67,23 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newYear = parseInt(e.target.value, 10);
-    const newDate = new Date(viewDate);
-    newDate.setFullYear(newYear);
+    // Use 1st of month to allow safe year switching (e.g. Feb 29 -> non-leap year)
+    const newDate = new Date(newYear, viewDate.getMonth(), 1);
+    setViewDate(newDate);
+  };
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newMonth = parseInt(e.target.value, 10);
+    const newDate = new Date(viewDate.getFullYear(), newMonth, 1);
     setViewDate(newDate);
   };
 
   const handleDayClick = (day: number, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onSelectDate(new Date(currentYear, currentMonth, day));
+    // Create date at 00:00:00 local
+    const newDate = new Date(currentYear, currentMonth, day);
+    onSelectDate(newDate);
   };
 
   const isDateDisabled = (year: number, month: number, day: number) => {
@@ -112,31 +121,28 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
     <div className="flex w-full flex-col bg-transparent select-none animate-in fade-in duration-300">
       {/* iOS Style Header */}
       <div className="flex items-center justify-between mb-4 px-1 pt-1">
-        <div className="flex items-center gap-1.5">
-            <span className="text-primary font-semibold text-lg cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-1 group relative">
-                {monthNames[currentMonth]}
+        <div className="flex items-center gap-2">
+            <div className="relative group flex items-center">
+                <span className="text-primary font-semibold text-[19px] cursor-pointer hover:opacity-70 transition-opacity flex items-center gap-1">
+                    {monthNames[currentMonth]}
+                    <span className="text-[10px] opacity-50 rotate-90 scale-75">▶</span>
+                </span>
                 {/* Invisible Select Overlay for iOS native picker feel */}
                 <select 
                     value={currentMonth}
-                    onChange={(e) => {
-                        const newMonth = parseInt(e.target.value);
-                        const d = new Date(viewDate);
-                        d.setMonth(newMonth);
-                        setViewDate(d);
-                    }}
-                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer appearance-none"
+                    onChange={handleMonthChange}
+                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer appearance-none z-10"
                 >
                     {monthNames.map((m, i) => <option key={i} value={i}>{m}</option>)}
                 </select>
-                <span className="text-[10px] opacity-50">▼</span>
-            </span>
+            </div>
             
-            <div className="relative group">
-                <span className="text-black dark:text-white text-lg font-normal ml-1">{currentYear}</span>
+            <div className="relative group flex items-center">
+                <span className="text-black dark:text-white text-[19px] font-normal cursor-pointer hover:opacity-70 transition-opacity">{currentYear}</span>
                 <select 
                     value={currentYear}
                     onChange={handleYearChange}
-                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer appearance-none"
+                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer appearance-none z-10"
                 >
                     {years.map(y => (
                         <option key={y} value={y} className="text-black">{y}</option>
@@ -150,14 +156,14 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
               type="button"
               onClick={prevMonth}
               disabled={currentYear === minYear && currentMonth === 0}
-              className="text-primary disabled:opacity-30 w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors active:bg-gray-200 dark:active:bg-white/20 flex items-center justify-center">
+              className="text-primary disabled:opacity-30 w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors active:bg-gray-200 dark:active:bg-white/20 flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px]">chevron_left</span>
             </button>
             <button 
               type="button"
               onClick={nextMonth}
               disabled={currentYear === maxYear && currentMonth === 11}
-              className="text-primary disabled:opacity-30 w-9 h-9 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors active:bg-gray-200 dark:active:bg-white/20 flex items-center justify-center">
+              className="text-primary disabled:opacity-30 w-10 h-10 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 transition-colors active:bg-gray-200 dark:active:bg-white/20 flex items-center justify-center">
               <span className="material-symbols-outlined text-[24px]">chevron_right</span>
             </button>
         </div>
@@ -166,7 +172,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
       {/* Weekday Headers */}
       <div className="grid grid-cols-7 mb-2">
         {weekDays.map((d, i) => (
-          <div key={`${d}-${i}`} className="text-gray-400 dark:text-gray-500 text-[11px] font-semibold uppercase text-center">
+          <div key={`${d}-${i}`} className="text-gray-400 dark:text-gray-500 text-[12px] font-semibold uppercase text-center">
             {d}
           </div>
         ))}
@@ -176,7 +182,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
       <div className="grid grid-cols-7 gap-y-1 place-items-center">
         {/* Padding for empty days at start of month */}
         {[...Array(firstDay)].map((_, i) => (
-          <div key={`empty-${i}`} className="h-10 w-full" />
+          <div key={`empty-${i}`} className="h-11 w-full" />
         ))}
         
         {/* Days */}
@@ -199,9 +205,9 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
               type="button"
               disabled={disabled}
               onClick={(e) => !disabled && handleDayClick(day, e)}
-              className={`relative flex items-center justify-center h-10 w-10 outline-none rounded-full touch-manipulation group ${disabled ? 'cursor-not-allowed opacity-20' : 'cursor-pointer'}`}>
+              className={`relative flex items-center justify-center h-11 w-11 outline-none rounded-full touch-manipulation group ${disabled ? 'cursor-not-allowed opacity-20' : 'cursor-pointer'}`}>
               <div className={`
-                flex size-[34px] items-center justify-center rounded-full text-[17px] transition-all duration-200
+                flex size-[40px] items-center justify-center rounded-full text-[18px] transition-all duration-200
                 ${isSelected 
                   ? 'bg-primary text-white font-semibold shadow-sm' 
                   : disabled ? 'text-gray-400 dark:text-gray-600' : 'text-black dark:text-white font-normal hover:bg-gray-100 dark:hover:bg-white/10'
@@ -212,7 +218,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
               </div>
               {/* iOS style dot for today */}
               {!isSelected && isToday && !disabled && (
-                  <div className="absolute bottom-1 w-1 h-1 bg-primary rounded-full"></div>
+                  <div className="absolute bottom-1.5 w-1 h-1 bg-primary rounded-full"></div>
               )}
             </button>
           );
@@ -222,8 +228,9 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onSelectDate, minYear
       {/* Today Button Footer */}
       <div className="flex justify-center mt-3 pt-2 border-t border-gray-100 dark:border-white/5">
         <button 
+            type="button"
             onClick={jumpToToday}
-            className="text-primary text-sm font-medium active:opacity-50 transition-opacity">
+            className="text-primary text-[15px] font-medium active:opacity-50 transition-opacity">
             Today
         </button>
       </div>
